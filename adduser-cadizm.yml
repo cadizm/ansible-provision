@@ -1,0 +1,30 @@
+
+---
+
+- hosts: all
+  tasks:
+
+    - name: Add user cadizm
+      user:
+        name: cadizm
+        group: sudo
+        shell: /bin/bash
+        state: present
+
+    - name: Add cadizm authorized_key
+      authorized_key:
+        user: cadizm
+        key: https://github.com/cadizm.keys
+
+    - name: Disable root login
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        state: present
+        regexp: '^PermitRootLogin\s+.*$'
+        line: 'PermitRootLogin no'
+      notify:
+        - Restart sshd
+
+  handlers:
+    - name: Restart sshd
+      service: name=sshd state=restarted
