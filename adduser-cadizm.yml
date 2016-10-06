@@ -7,7 +7,8 @@
     - name: Add user cadizm
       user:
         name: cadizm
-        group: sudo
+        group: users
+        groups: users,sudo
         shell: /bin/bash
         state: present
 
@@ -15,6 +16,12 @@
       authorized_key:
         user: cadizm
         key: https://github.com/cadizm.keys
+
+    - name: Set home ownership
+      file:
+        path: /home/cadizm
+        owner: cadizm
+        recurse: yes
 
     - name: Disable root login
       lineinfile:
@@ -25,6 +32,46 @@
       notify:
         - Restart sshd
 
+    - name: Install vim
+      apt: name=vim update_cache=yes
+
+    - name: Install git
+      apt: name=git update_cache=no
+
+    - name: Install pip
+      apt: name=python-pip update_cache=no
+
+    - name: Install python dotfiles
+      pip: name=dotfiles
+
+    - name: Create workspace/src directory
+      file:
+        path: /home/cadizm/workspace/src
+        state: directory
+        mode: 0755
+        owner: cadizm
+        group: users
+
+    - name: Check out cadizm dotfiles repo
+      git:
+        repo: https://github.com/cadizm/dotfiles.git
+        dest: /home/cadizm/workspace/src/dotfiles
+      notify:
+        - Sync dotfiles
+
+    - name: Check out cadizm bin repo
+      git:
+        repo: https://github.com/cadizm/bin.git
+        dest: /home/cadizm/workspace/src/bin
+      notify:
+        - Link bin dir
+
   handlers:
     - name: Restart sshd
       service: name=sshd state=restarted
+
+    - name: Sync dotfiles
+      command: su --command='dotfiles --sync --home=/home/cadizm --repo=/home/cadizm/workspace/src/dotfiles' cadizm
+
+    - name: Link bin dir
+      command: su --command='ln -s /home/cadizm/workspace/src/bin /home/cadizm/bin' cadizm
