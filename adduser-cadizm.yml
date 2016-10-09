@@ -71,7 +71,9 @@
       service: name=sshd state=restarted
 
     - name: Sync dotfiles
-      command: su --command='dotfiles --sync --home=/home/cadizm --repo=/home/cadizm/workspace/src/dotfiles' cadizm
+      command: dotfiles --sync --force --home=/home/cadizm --repo=/home/cadizm/workspace/src/dotfiles
+      become_user: cadizm
 
     - name: Link bin dir
-      command: su --command='ln -s /home/cadizm/workspace/src/bin /home/cadizm/bin' cadizm
+      command: ln -s /home/cadizm/workspace/src/bin /home/cadizm/bin
+      become_user: cadizm
