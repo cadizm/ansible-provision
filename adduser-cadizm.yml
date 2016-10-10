@@ -2,8 +2,8 @@
 ---
 
 - hosts: all
+  become: true
   tasks:
-
     - name: Add user cadizm
       user:
         name: cadizm
@@ -22,6 +22,13 @@
         path: /home/cadizm
         owner: cadizm
         recurse: yes
+
+    - name: Sudoers nopasswd
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^%sudo\s+.*$'
+        line: '%sudo   ALL=(ALL) NOPASSWD:ALL'
 
     - name: Disable root login
       lineinfile:
