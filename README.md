@@ -10,3 +10,10 @@ config.vm.provision "provision-user", type: "ansible" do |ansible|
   ansible.sudo = true
 end
 ```
+
+Localhost
+=========
+
+```
+$ ansible-playbook -i "localhost," -c local adduser-cadizm.yml
+```
