@@ -45,8 +45,11 @@
     - name: Install git
       apt: name=git update_cache=no
 
+    - name: Install python-apt
+      apt: name=python-apt update_cache=no
+
     - name: Install pip
-      apt: name=python-pip update_cache=no
+      apt: name=python3-pip update_cache=no
 
     - name: Install python dotfiles
       pip: name=dotfiles
